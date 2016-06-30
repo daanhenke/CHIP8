@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Font Creator for Chipito</title>
+</head>
+<body>
+
+<textarea id="desform"></textarea>
+<button onclick="createBin();">---></button>
+<button onclick="createDes();"><---</button>
+<textarea id="binform"></textarea>
+
+<script>
+    function createDes() {
+        var bin = document.getElementById("binform").value;
+        var chars = "";
+        var newstr = "";
+        for(var char in bin)
+        {
+            if(bin[char] == ",")
+            {
+                newstr += parseInt(chars).toString(2) + "\n";
+                chars = "";
+                char += 2
+            }
+            else
+            {
+                chars += bin[char];
+            }
+        }
+        document.getElementById("desform").value = newstr
+    }
+
+    function createBin() {
+        var bin = document.getElementById("desform").value;
+        var chars = "";
+        var newstr = "";
+        for(var char in bin)
+        {
+            console.log(chars);
+            if(bin[char] == "\n")
+            {
+
+            }
+            else
+            {
+                if(chars.length >= 8)
+                {
+                    newstr += parseInt(chars).toString(16).toUpperCase() + ", ";
+                    chars = "";
+                }
+                else
+                {
+                    chars += bin[char];
+                }
+            }
+        }
+        document.getElementById("binform").value = newstr
+    }
+</script>
+</body>
+</html>

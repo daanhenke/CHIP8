@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CHIPPERT</title>
+</head>
+<body>
+
+<textarea id="sourcecode"></textarea>
+<button onclick="exsource();">Execute code</button>
+
+<br>
+
+<button onclick="chipito.clear();">(re)start Chip8</button>
+
+<br>
+
+<div id="console"></div>
+
+<br>
+
+<button onclick="createRAMTable();">Generate RAM dump</button>
+<button onclick="updateRAMTable();">Update RAM dump</button>
+
+<br>
+
+<a href="#TELEM200">Program Start (0x200)</a>
+<a href="#TELEM600">Program Start (0x600)</a>
+
+<table border="solid" id="mem">
+    <tr id="TBLInfo">
+        <td>MEMORY</td><td>00</td><td>01</td><td>02</td><td>03</td><td>04</td><td>05</td><td>06</td><td>07</td><td>08</td><td>09</td><td>0A</td><td>0B</td><td>0C</td><td>0D</td><td>0E</td><td>0F</td>
+    <tr>
+</table>
+
+
+<script src="chipscript.js"></script>
+<script>
+    function updateRAMTable() {
+        for(var i=0x0; i<=0xFFF; i++)
+        {
+            var elem = document.getElementById("TELEM" + (i).toString(16).toUpperCase());
+            elem.innerText = (chipito.memory[i]).toString(16).toUpperCase();
+        }
+    }
+
+    function createRAMTable() {
+        for(var i=0x0; i<=0xFF; i++)
+        {
+            var elem = document.createElement("tr");
+            elem.id = ("TBL" + (i*16).toString(16).toUpperCase());
+
+            var childelem = document.createElement("td");
+            var childtext = document.createTextNode((i*16).toString(16).toUpperCase());
+
+            childelem.appendChild(childtext);
+            elem.appendChild(childelem);
+
+            for(var j=0x0; j<=0xF; j++)
+            {
+                childelem = document.createElement("td");
+                childelem.id = "TELEM" + (i*16 + j).toString(16).toUpperCase();
+                childtext = document.createTextNode((chipito.memory[i*16 + j]).toString(16).toUpperCase());
+
+                childelem.appendChild(childtext);
+                elem.appendChild(childelem);
+            }
+
+
+            document.getElementById("mem").appendChild(elem);
+        }
+    }
+</script>
+</body>
+</html>
