@@ -1,9 +1,24 @@
 /**
  * Created by daan on 6/29/2016.
- */
+ * */
 
 opcodes = {
-    
+    0x0: "handle0",
+    0x1: "JP",
+    0x2: "CALL",
+    0x3: "error",
+    0x4: "error",
+    0x5: "error",
+    0x6: "error",
+    0x7: "error",
+    0x8: "error",
+    0x9: "error",
+    0xA: "error",
+    0xB: "error",
+    0xC: "error",
+    0xD: "error",
+    0xE: "error",
+    0xF: "error"
 };
 
 chipito = {
@@ -19,6 +34,14 @@ chipito = {
             0xF0, 0x80, 0xF0, 0x10, 0xF0,   //5
             0xF0, 0x80, 0xF0, 0x90, 0xF0,   //6
             0xF0, 0x10, 0x20, 0x40, 0x40,   //7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0,   //8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0,   //9
+            0xF0, 0x90, 0xF0, 0x90, 0x90,   //A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0,   //B
+            0xF0, 0x80, 0x80, 0x80, 0xF0,   //C
+            0xE0, 0x90, 0x90, 0x90, 0xE0,   //D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0,   //E
+            0xF0, 0x80, 0xF0, 0x80, 0x80,   //F
     ],
 
     //8 Bit registers V0 - VF
@@ -55,5 +78,69 @@ chipito = {
         {
             this.memory[i] = this.font[i];
         }
+    },
+
+    opcode: function () {
+        //Get 16 bit opcode from memory
+        var opcode = (this.memory[this.PC] << 8) + (this.memory[this.PC + 1]);
+
+        //Get all possible variables inside opcode because I'm lazy as fuck and don't wanna type that 50 times
+        var nnn = opcode & 0x0FFF;
+        var n = opcode & 0x000F;
+        var x = opcode & 0x0F00 >> 8;
+        var y = opcode & 0x00F0 >> 4;
+
+        //Get opcode ID (first 4 bits)
+        var opid = (opcode & 0xF000) >> 12;
+
+        console.log(opid);
+
+        //Lookup opcode ID in the opcode lookup table and execute the corresponding function
+        this[opcodes[opid]](nnn, n, x, y);
+
+
+    },
+
+    //What do you think...
+    error: function (nnn, n, x, y) {
+        alert("Unknown / Unimplemented opcode.")
+    },
+
+    //0Handler, 0x*** has more than one opcode so we need something to find the right one
+    handle0: function (nnn, n, x, y) {
+        //Use n to identify the right opcode, cheeky breeky life hack
+        switch(n)
+        {
+            case 0x0:
+                this.error();
+                break;
+
+            case 0xE:
+                this.RET(nnn, n, x, y);
+                break;
+        }
+    },
+
+    //JP nnn, jumps to location nnn
+    JP: function (nnn) {
+        this.PC = nnn;
+    },
+
+    //CALL nnn, calls nnn as subroutine (pushes current PC to stack etc etc)
+    /*
+    * PLEASE
+    * PLEASE DAAN DONT BE A NEWFAG AND FORGET TO CHANGE 8 AND 16 BIT INTEGERS TO THEIR OWN DATA TYPE BECUZ OVERFLOWS WONT WORK OTHERWISE
+    * PLEASE
+    */
+    CALL: function (nnn) {
+        this.Stack[this.SP] = this.PC;
+        this.SP++;
+        this.PC = nnn;
+    },
+
+    //RET, sets PC to the address in the stack on SP - 1, why SP - 1? because laziness
+    RET: function () {
+        this.PC = this.Stack[this.SP - 1] + 2;
+        this.SP -= 1;
     }
 };

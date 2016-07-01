@@ -8,6 +8,8 @@
 
 <textarea id="sourcecode"></textarea>
 <button onclick="exsource();">Execute code</button>
+<button onclick="chipito.opcode();">Tick Chipito</button>
+<button onclick="getRegisters();">Debugger Data</button>
 
 <br>
 
@@ -16,6 +18,10 @@
 <br>
 
 <div id="console"></div>
+
+<br>
+
+<a href="createfont.html">Font Gen</a>
 
 <br>
 
@@ -36,7 +42,31 @@
 
 <script src="chipscript.js"></script>
 <script>
+    function exsource() {
+        var bin = document.getElementById("sourcecode").value;
+        var chars = "";
+        var bindat = new Array();
+        var i = 0
+        for(var char in bin)
+        {
+            if(bin[char] == ",")
+            {
+                bindat[i] = parseInt(chars);
+                chipito.memory[0x200 + i] = bindat[i];
+                i += 1;
+                chars = "";
+                char += 2
+            }
+            else
+            {
+                chars += bin[char];
+            }
+        }
+        console.log(bindat)
+    }
+
     function updateRAMTable() {
+       if (document.getElementById("TELEM1") == null) createRAMTable();
         for(var i=0x0; i<=0xFFF; i++)
         {
             var elem = document.getElementById("TELEM" + (i).toString(16).toUpperCase());
@@ -45,6 +75,7 @@
     }
 
     function createRAMTable() {
+        if (chipito.memory[0] == null) chipito.clear();
         for(var i=0x0; i<=0xFF; i++)
         {
             var elem = document.createElement("tr");
@@ -69,6 +100,15 @@
 
             document.getElementById("mem").appendChild(elem);
         }
+    }
+
+    function getRegisters() {
+        console.log("I", chipito.I);
+        console.log("Registers", chipito.registers);
+        console.log("Timers S\\D:", chipito.tSound, chipito.tDelay);
+        console.log("PC", chipito.PC);
+        console.log("Stack", chipito.Stack);
+        console.log("SP", chipito.SP);
     }
 </script>
 </body>

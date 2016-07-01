@@ -11,6 +11,8 @@
 <button onclick="createDes();"><---</button>
 <textarea id="binform"></textarea>
 
+<a href="index.html">Back</a>
+
 <script>
     function createDes() {
         var bin = document.getElementById("binform").value;
@@ -45,9 +47,10 @@
             }
             else
             {
-                if(chars.length >= 8)
+                if(chars.length >= 7)
                 {
-                    newstr += parseInt(chars).toString(16).toUpperCase() + ", ";
+                    chars += bin[char];
+                    newstr += "0x" + parseInt(chars, 2).toString(16).toUpperCase() + ", ";
                     chars = "";
                 }
                 else
